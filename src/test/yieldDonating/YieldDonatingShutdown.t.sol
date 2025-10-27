@@ -8,7 +8,6 @@ contract YieldDonatingShutdownTest is Setup {
         super.setUp();
     }
 
-
     function test_shutdownCanWithdraw(uint256 _amount) public {
         vm.assume(_amount > minFuzzAmount && _amount < maxFuzzAmount);
 

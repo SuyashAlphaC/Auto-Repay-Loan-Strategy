@@ -5,6 +5,9 @@ import {BaseStrategy} from "@octant-core/core/BaseStrategy.sol";
 import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
+// todo implement IYieldSource interface
+interface IYieldSource {}
+
 /**
  * @title YieldDonating Strategy Template
  * @author Octant
@@ -19,11 +22,10 @@ import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol
 contract YieldDonatingStrategy is BaseStrategy {
     using SafeERC20 for ERC20;
 
-    /// @notice Address of the compounder vault or external yield source
-    address public immutable compounderVault;
+    /// @notice Address of the yield source (e.g., Aave pool, Compound, Yearn vault)
+    IYieldSource public immutable yieldSource;
 
     /**
-     * @param _compounderVault Address of the yield source (e.g., AAVE pool, Compound, Yearn vault)
      * @param _asset Address of the underlying asset
      * @param _name Strategy name
      * @param _management Address with management role
@@ -34,7 +36,7 @@ contract YieldDonatingStrategy is BaseStrategy {
      * @param _tokenizedStrategyAddress Address of TokenizedStrategy implementation
      */
     constructor(
-        address _compounderVault,
+        address _yieldSource,
         address _asset,
         string memory _name,
         address _management,
@@ -55,9 +57,10 @@ contract YieldDonatingStrategy is BaseStrategy {
             _tokenizedStrategyAddress
         )
     {
-        // Initialize the asset and compounder vault
-        asset = ERC20(_asset);
-        compounderVault = _compounderVault;
+        yieldSource = IYieldSource(_yieldSource);
+
+        // max allow Yield source to withdraw assets
+        ERC20(_asset).forceApprove(_yieldSource, type(uint256).max);
 
         // TokenizedStrategy initialization will be handled separately
         // This is just a template - the actual initialization depends on
@@ -77,12 +80,12 @@ contract YieldDonatingStrategy is BaseStrategy {
      * manipulated.
      *
      * @param _amount The amount of 'asset' that the strategy can attempt
-     * to deposit in the yield source.
+     * to deploy.
      */
     function _deployFunds(uint256 _amount) internal override {
         // TODO: implement your logic to deploy funds into yield source
         // Example for AAVE:
-        // aavePool.supply(address(asset), _amount, address(this), 0);
+        // yieldSource.supply(address(asset), _amount, address(this), 0);
         // Example for ERC4626 vault:
         // IERC4626(compounderVault).deposit(_amount, address(this));
     }
@@ -111,7 +114,7 @@ contract YieldDonatingStrategy is BaseStrategy {
     function _freeFunds(uint256 _amount) internal override {
         // TODO: implement your logic to free funds from yield source
         // Example for AAVE:
-        // aavePool.withdraw(address(asset), _amount, address(this));
+        // yieldSource.withdraw(address(asset), _amount, address(this));
         // Example for ERC4626 vault:
         // uint256 shares = IERC4626(compounderVault).convertToShares(_amount);
         // IERC4626(compounderVault).redeem(shares, address(this), address(this));
@@ -145,21 +148,9 @@ contract YieldDonatingStrategy is BaseStrategy {
         returns (uint256 _totalAssets)
     {
         // TODO: Implement harvesting logic
-        // 1. Claim any rewards from the yield source
-        // 2. Convert rewards to base asset (if needed)
-        // 3. Return accurate total of all assets held
-        //
-        // Example:
-        // - Harvest rewards from external protocol
-        // - Sell reward tokens for base asset
-        // - Get strategy's balance in yield source
-        // - Add any idle balance
-        // - Return the total
-
-        // Profits will automatically be minted as shares to the donation address
-
-        // Placeholder - replace with actual implementation
-        _totalAssets = asset.balanceOf(address(this));
+        // 1. Amount of assets claimable from the yield source
+        // 2. Amount of assets idle in the strategy
+        // 3. Return the total (assets claimable + assets idle)
     }
 
     /*//////////////////////////////////////////////////////////////
@@ -169,11 +160,10 @@ contract YieldDonatingStrategy is BaseStrategy {
     /**
      * @notice Gets the max amount of `asset` that can be withdrawn.
      * @dev Can be overridden to implement withdrawal limits.
-     * @param _owner The address that owns the shares.
      * @return . The available amount that can be withdrawn.
      */
     function availableWithdrawLimit(
-        address _owner
+        address /*_owner*/
     ) public view virtual override returns (uint256) {
         return type(uint256).max;
     }

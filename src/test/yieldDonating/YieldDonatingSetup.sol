@@ -62,10 +62,7 @@ contract YieldDonatingSetup is Test, IEvents {
 
         // Read yield source from environment
         yieldSource = vm.envAddress("TEST_YIELD_SOURCE");
-        require(
-            yieldSource != address(0),
-            "TEST_YIELD_SOURCE not set in .env"
-        );
+        require(yieldSource != address(0), "TEST_YIELD_SOURCE not set in .env");
 
         // Deploy YieldDonatingTokenizedStrategy implementation
         tokenizedStrategyAddress = address(
