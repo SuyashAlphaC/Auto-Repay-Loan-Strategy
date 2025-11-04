@@ -15,7 +15,9 @@ FORK_URL := $(shell grep '^ETH_RPC_URL=' .env | cut -d '=' -f2-)
 # if we want to run only matching tests, set that here
 test := test_
 
-# local tests without fork
+# local tests without fork (uses mock contracts)
+test-no-fork  :; forge test -vv
+# tests with mainnet fork (requires real contracts and RPC)
 test  :; forge test -vv --fork-url ${FORK_URL}
 trace  :; forge test -vvv --fork-url ${FORK_URL}
 gas  :; forge test --fork-url ${FORK_URL} --gas-report

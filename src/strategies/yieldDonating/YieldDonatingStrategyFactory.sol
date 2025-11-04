@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.25;
 
-import {YieldDonatingStrategy} from "./YieldDonatingStrategy.sol";
+import {YieldDonatingStrategy, MarketParams} from "./YieldDonatingStrategy.sol";
 import {IStrategyInterface} from "../../interfaces/IStrategyInterface.sol";
 import {YieldDonatingTokenizedStrategy} from "@octant-core/strategies/yieldDonating/YieldDonatingTokenizedStrategy.sol";
 
@@ -30,22 +30,27 @@ contract YieldDonatingStrategyFactory {
     }
 
     /**
-     * @notice Deploy a new YieldDonating Strategy.
-     * @param _compounderVault The yield source (e.g., AAVE pool, Compound, Yearn vault)
-     * @param _asset The underlying asset for the strategy to use.
+     * @notice Deploy a new Auto-Repaying Spark-Morpho Multi-Strategy.
+     * @param _asset The underlying asset for the strategy to use (DAI).
      * @param _name The name for the strategy.
+     * @param _sparkPool Spark lending pool address
+     * @param _sDAI Spark Savings DAI address
+     * @param _morphoBlue Morpho Blue protocol address
+     * @param _marketParams Morpho market parameters
      * @return The address of the new strategy.
      */
     function newStrategy(
-        address _compounderVault,
         address _asset,
-        string calldata _name
+        string calldata _name,
+        address _sparkPool,
+        address _sDAI,
+        address _morphoBlue,
+        MarketParams calldata _marketParams
     ) external virtual returns (address) {
-        // Deploy new YieldDonating strategy
+        // Deploy new Auto-Repaying Multi-Strategy
         IStrategyInterface _newStrategy = IStrategyInterface(
             address(
                 new YieldDonatingStrategy(
-                    _compounderVault,
                     _asset,
                     _name,
                     management,
@@ -53,7 +58,11 @@ contract YieldDonatingStrategyFactory {
                     emergencyAdmin,
                     donationAddress,
                     enableBurning,
-                    tokenizedStrategyAddress
+                    tokenizedStrategyAddress,
+                    _sparkPool,
+                    _sDAI,
+                    _morphoBlue,
+                    _marketParams
                 )
             )
         );
