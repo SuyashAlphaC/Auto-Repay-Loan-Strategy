@@ -14,11 +14,6 @@ import {ITokenizedStrategy} from "@octant-core/core/interfaces/ITokenizedStrateg
 import {IEvents} from "@tokenized-strategy/interfaces/IEvents.sol";
 import {YieldDonatingTokenizedStrategy} from "@octant-core/strategies/yieldDonating/YieldDonatingTokenizedStrategy.sol";
 
-/* ========== MOCK IMPORTS (Commented out for mainnet testing) ========== */
-// import {MockERC20} from "../mocks/MockERC20.sol";
-// import {MockERC4626} from "../mocks/MockERC4626.sol";
-// import {MockMorphoBlue} from "../mocks/MockMorphoBlue.sol";
-
 contract YieldDonatingSetup is Test, IEvents {
     // Contract instances that we will use repeatedly.
     ERC20 public asset;
