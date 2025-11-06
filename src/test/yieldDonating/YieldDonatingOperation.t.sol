@@ -9,7 +9,7 @@ contract YieldDonatingOperationTest is Setup {
         super.setUp();
     }
 
-    function test_setupStrategyOK() public {
+    function test_setupStrategyOK() public view {
         console2.log("address of strategy", address(strategy));
         assertTrue(address(0) != address(strategy));
         assertEq(strategy.asset(), address(asset));
@@ -36,7 +36,7 @@ contract YieldDonatingOperationTest is Setup {
         // - Morpho interest is donated to dragonRouter
 
         // Get dragonRouter balance before
-        uint256 dragonRouterBalanceBefore = asset.balanceOf(dragonRouter);
+        // uint256 dragonRouterBalanceBefore = asset.balanceOf(dragonRouter);
 
         vm.prank(keeper);
         (uint256 profit, uint256 loss) = strategy.report();

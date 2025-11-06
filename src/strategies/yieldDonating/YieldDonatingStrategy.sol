@@ -293,7 +293,6 @@ contract YieldDonatingStrategy is BaseStrategy {
     }
     /**
      * @notice Deploy funds to create community lending pool
-     * @author SuyashAlphaC
      * @dev Called when DAO deposits DAI into the vault
      * @param _amount Amount of DAI to deploy
      *
@@ -754,7 +753,7 @@ contract YieldDonatingStrategy is BaseStrategy {
         Position memory pos = MORPHO_BLUE.position(MARKET_ID, address(this));
         (
             , // totalSupplyAssets,
-            uint128 totalSupplyShares,
+            ,
             uint128 totalBorrowAssets,
             uint128 totalBorrowShares,
             ,
@@ -1143,4 +1142,3 @@ contract YieldDonatingStrategy is BaseStrategy {
             : 0;
     }
 }
-
